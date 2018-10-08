@@ -1,0 +1,33 @@
+language: node_js
+node_js:
+- lts/*
+- node
+services:
+- docker
+after_success:
+- export DOCKER_REPO="imqueuesandbox/auth"
+- export VERSION_REGEX="^v([0-9]+)\.([0-9]+)\.([0-9]+)$"
+- export DEV_VERSION_REGEX="^v([0-9]+)\.([0-9]+)\.([0-9]+)-([0-9A-Za-z]+)$"
+- export DOCKER_TAGS=()
+- export DATE_STR=`date +"%Y-%m-%d-%H-%M-%S"`
+- docker build -f Dockerfile -t $DOCKER_REPO:$TRAVIS_COMMIT . || travis_terminate 1
+- if [[ $TRAVIS_TAG =~ $DEV_VERSION_REGEX ]]; then
+    DOCKER_TAGS+=( "dev" ) && DOCKER_TAGS+=( $TRAVIS_TAG );
+  fi
+- if [[ $TRAVIS_TAG =~ $VERSION_REGEX ]]; then
+    DOCKER_TAGS+=( "latest" ) && DOCKER_TAGS+=( $TRAVIS_TAG );
+  fi
+- if [[ $TRAVIS_BRANCH == "release" ]]; then
+    DOCKER_TAGS+=( "release" ) && DOCKER_TAGS+=( "release-${DATE_STR}");
+  fi
+- if [ ${#DOCKER_TAGS[@]} -gt 0 ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    for tag in "${DOCKER_TAGS[@]}"; do
+      docker tag $DOCKER_REPO:$TRAVIS_COMMIT $DOCKER_REPO:$tag;
+    done;
+    docker login -u $DOCKER_USER -p $DOCKER_PASS || travis_terminate 1;
+    docker push $DOCKER_REPO || travis_terminate 1;
+  fi
+env:
+  global:
+  - secure: reGC3gGlhS6U5ROhhooHq5zwXn+Oxi/EZNiwOSeKzKU/RbxOOzn/AEaN97XopCzNLD1ebnLv341UknEX8SwrQIY2lw4FjVnf0wNG+sq6shbJXW6QTXodqRIv5GIAVkq/RwbDDePNj5u3uJmXSlexoohiX+eCjnQkQzGNvr8QJJctw/AUTozO/1iyYPE2XlqlfR4Lfklza7y52DIt+tbmd4uofAisaYEOJzhHHA9itXIwkhkGfdlOochSpr/QIoayd95iBOsKGjhCxcK+GH3867OOxjOZLZkYI/U1mjApRFCjslNuvlO+xhmvDRILiLpcMp9zxyLOYxFSGJF2fs0jwNauEroWV9NPiWTYR4EFowvOXcnIOdgCaFSmu2ghzKVo9aP/HrbBUns2WMPDtVY0kqCOltVitNPE+bn++4Yr4SjBdm1+ps6JxzPTCy1i6O9DTP2b+U7h4QWs7NSv1k7hkmlRDCysuG/NyQhidX6Z12C9n1CTJdiRgL4gdANPX/MNDqVAeox/PkJRGzOvwd65Ty31r53ffTEk5CoctcpVmARsVr6njlqVZvfulUjDCqK1b1uHJ+N5DIKL7OL0LHeq3XXkoAUlAQdIWB3nZ246FBcLk3l+y16gHI/BPDeMK2SnoG2nOUuoSUB1ZmDe5PTW10hzmAqZceHQT2Rrhj2Gx5c=
+  - secure: fcuuSQhKAWnpj3UDr10PTgeSWNY69EhsgRQ+YSpXwUsmG3PrDbLSTpaI+EzlgyagG8PeoFkffWCm0p+R5qCST2ougdhJd+0wPosFuUgtMpC8Z1iu/Fg4/Tnk4W8bs8oZpB3s0fqQZMDs/7b4ZXohGeIjyt4XZQJZ6rut2k6D+l/ac1t3NMY1F4oRWiXD7utjdNefPYlL6KKm2O5SjMi5OrfWKRfjFwzinZ1a06+YYvY92vQ9dQA/i7OEWVGgTD4wMzgqdZwNJHFbhwk86GipWNnJH/ZOZhQxUzvNJnHFURTuvkMvATjQ9Q7EncxjylvsscEN4cWP+wf19etAhRpKRlzyC4W2SWTjg18+2pzIx2X3Ba08HGutosevWbLaKB5/55ZuCwZu2Y/eV3ioQKpFQ5uKIkH5j/GJ+gWNO5r/bFjxAbeiXsYr8OaRayuCEF44LWqbBg4keE3WaHnOXLDCKT+Jw5loXX3JwHs7tP4GozY7I/+skl4Bk2pAjhmOVvvY1fCWwBYDBEJx67fZOSMatTfYbPzF7hGWVfRzgjpUgf/aEQbZqybUjZ231a4/wboyhA7MYHETeZs49PrYaBIfJ/qXAo9khrKozaVJVrPeRQo3q0sy2JWy1xH8i9GYezALviVjd9sEBgybZcGu6OoJIY0tykS3S22MEbLdW1WMz6I=
