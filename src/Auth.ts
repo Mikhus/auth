@@ -89,7 +89,7 @@ export class Auth extends IMQService {
             return null; // token expired
         }
 
-        return data;
+        return this.user.fetch(data.email);
     }
 
 }
