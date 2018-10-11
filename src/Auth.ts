@@ -80,7 +80,7 @@ export class Auth extends IMQService {
     public async verify(token: string): Promise<object | null> {
         const data = jwtDecode(token) as any;
 
-        if (data.exp && new Date().getTime() > data.exp * 1000) {
+        if (data && data.exp && new Date().getTime() > data.exp * 1000) {
             return null; // token expired
         }
 
