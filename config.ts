@@ -16,7 +16,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
-import { IMQServiceOptions } from '@imqueue/rpc';
+import { IMQServiceOptions, IMQClientOptions } from '@imqueue/rpc';
 import { config as initEnvironment } from 'dotenv';
 
 initEnvironment();
@@ -26,3 +26,12 @@ initEnvironment();
 export const serviceOptions: Partial<IMQServiceOptions> = {
     /* define your service-specific options here */
 };
+
+export const clientOptions: Partial<IMQClientOptions> = {
+    /* define your service-specific options here */
+};
+
+export const JWT_KEY: string = process.env['JWT_KEY'] || 'ewf874398iad';
+export const JWT_EXPIRE: number = parseInt(
+    process.env['JWT_EXPIRE'] || '0'
+) || 3600;

@@ -21,19 +21,64 @@ import {
     expose,
     profile,
 } from '@imqueue/rpc';
+import { jwtEncode, jwtDecode, user as u } from '.';
+import { clientOptions } from '../config';
 
 export class Auth extends IMQService {
-    // Implement your service methods here, example:
+
+    private user: u.UserClient;
+
+    public async start() {
+        this.user = new u.UserClient(clientOptions);
+        await this.user.start();
+        return super.start();
+    }
+
     /**
-     * Returns "Hello!" string.
-     * This method is just an example of implementation. Please, remove it
-     * and write your service methods instead.
-     * 
-     * @return {string}
+     * Logs user in
+     *
+     * @param {string} email - user email address
+     * @param {string} password - user password hash
+     * @return {string|null} - issued user auth token or null if auth failed
      */
     @profile()
     @expose()
-    public hello(): string {
-        return "Hello!";
+    public async login(email: string, password: string): Promise<string | null> {
+        const user = await this.user.fetch(email);
+
+        if (!(user && user.password === password && user.isActive)) {
+            return null;
+        }
+
+        delete user.password;
+
+        return jwtEncode(user);
     }
+
+    /**
+     * Logs user out
+     *
+     * @param {string} token
+     * @return {boolean}
+     */
+    @profile()
+    @expose()
+    public async logout(token: string): Promise<boolean> {
+        // TODO: implement
+        return true;
+    }
+
+    /**
+     * Verify if user token is valid, and if so - returns an associated user
+     * object
+     *
+     * @param {string} token
+     * @return {object | null}
+     */
+    @profile()
+    @expose()
+    public async verify(token: string): Promise<object | null> {
+        return jwtDecode(token) as any;
+    }
+
 }
