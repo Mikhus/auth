@@ -24,6 +24,7 @@ import {
 } from '@imqueue/rpc';
 import { jwtEncode, jwtDecode } from '.';
 import { clientOptions } from '../config';
+import { md5 } from './encryption';
 
 export class Auth extends IMQService {
 
@@ -48,9 +49,9 @@ export class Auth extends IMQService {
     @expose()
     public async login(email: string, password: string): Promise<string | null> {
         const user = await this.user.fetch(email,
-            ['_id', 'email', 'isAdmin', 'isActive']);
+            ['_id', 'email', 'password', 'isAdmin', 'isActive']);
 
-        if (!(user && user.password === password && user.isActive)) {
+        if (!(user && user.password === md5(password) && user.isActive)) {
             return null;
         }
 
