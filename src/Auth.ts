@@ -20,16 +20,19 @@ import {
     IMQService,
     expose,
     profile,
+    IMQClient,
 } from '@imqueue/rpc';
-import { jwtEncode, jwtDecode, user as u } from '.';
+import { jwtEncode, jwtDecode } from '.';
 import { clientOptions } from '../config';
 
 export class Auth extends IMQService {
 
-    private user: u.UserClient;
+    private user: any;
 
     public async start() {
-        this.user = new u.UserClient(clientOptions);
+        this.user = new (
+            await IMQClient.create('User', clientOptions)
+        ).UserClient();
         await this.user.start();
         return super.start();
     }
@@ -44,7 +47,8 @@ export class Auth extends IMQService {
     @profile()
     @expose()
     public async login(email: string, password: string): Promise<string | null> {
-        const user = await this.user.fetch(email);
+        const user = await this.user.fetch(email,
+            ['_id', 'email', 'isAdmin', 'isActive']);
 
         if (!(user && user.password === password && user.isActive)) {
             return null;

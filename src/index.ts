@@ -17,5 +17,4 @@
  * 
  */
 export * from './Auth';
-export * from './clients';
 export * from './jwt';

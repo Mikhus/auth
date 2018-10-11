@@ -28,7 +28,8 @@ export const serviceOptions: Partial<IMQServiceOptions> = {
 };
 
 export const clientOptions: Partial<IMQClientOptions> = {
-    /* define your service-specific options here */
+    safeDelivery: true,
+    write: false
 };
 
 export const JWT_KEY: string = process.env['JWT_KEY'] || 'ewf874398iad';
