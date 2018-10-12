@@ -93,7 +93,12 @@ export class Auth extends IMQService {
             return true;
         }
 
-        const ttl: number = new Date().getTime() - data.exp * 1000;
+        const ttl: number = data.exp * 1000 - new Date().getTime();
+
+        if (ttl <= 0) {
+            return true;
+        }
+
         await this.db.set(token, "0", ['PX', ttl], 'NX');
 
         return true;
