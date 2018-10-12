@@ -74,6 +74,7 @@ export class Auth extends IMQService {
         }
 
         delete user.password;
+        delete user.isActive;
 
         return jwtEncode(user);
     }
