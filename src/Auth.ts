@@ -116,7 +116,7 @@ export class Auth extends IMQService {
         const data = jwtDecode(token) as any;
 
         if (!data || data.exp && new Date().getTime() > data.exp * 1000) {
-            return null; // token expired
+            return null;
         }
 
         return this.user.fetch(data.email);
