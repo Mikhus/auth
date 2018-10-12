@@ -38,6 +38,7 @@
     "@imqueue/rpc": "^1.2.8",
     "@types/jsonwebtoken": "^7.2.8",
     "dotenv": "^6.0.0",
+    "handy-redis": "^1.5.1",
     "jsonwebtoken": "^8.3.0"
   },
   "devDependencies": {

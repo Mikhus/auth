@@ -36,3 +36,6 @@ export const JWT_KEY: string = process.env['JWT_KEY'] || 'ewf874398iad';
 export const JWT_EXPIRE: number = parseInt(
     process.env['JWT_EXPIRE'] || '0'
 ) || 3600;
+
+export const AUTH_DB_HOST = process.env['AUTH_DB_HOST'] || 'localhost';
+export const AUTH_DB_PORT = process.env['AUTH_DB_PORT'] || 6379;

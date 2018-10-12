@@ -22,8 +22,9 @@ import {
     profile,
     IMQClient,
 } from '@imqueue/rpc';
+import { createHandyClient, IHandyRedis } from 'handy-redis';
 import { jwtEncode, jwtDecode } from '.';
-import { clientOptions } from '../config';
+import { clientOptions, AUTH_DB_HOST, AUTH_DB_PORT } from '../config';
 import { md5 } from './encryption';
 
 export class Auth extends IMQService {
@@ -35,6 +36,11 @@ export class Auth extends IMQService {
     private user: any;
 
     /**
+     * Tokens database connection
+     */
+    private db: IHandyRedis;
+
+    /**
      * Performs all required async preparations
      * on service initialization
      */
@@ -43,6 +49,7 @@ export class Auth extends IMQService {
             await IMQClient.create('User', clientOptions)
         ).UserClient();
         await this.user.start();
+        this.db = createHandyClient();
         return super.start();
     }
 
@@ -77,11 +84,19 @@ export class Auth extends IMQService {
     @profile()
     @expose()
     public async logout(token: string): Promise<boolean> {
-        // TODO: implement
+        const data = jwtDecode(token) as any;
+
+        if (!data) {
+            return true;
+        }
+
+        const ttl: number = new Date().getTime() - data.exp * 1000;
+        await this.db.set(token, "0", ['PX', ttl], 'NX');
+
         return true;
     }
 
-    /**
+    /**>
      * Verify if user token is valid, and if so - returns an associated user
      * object
      *
@@ -91,6 +106,10 @@ export class Auth extends IMQService {
     @profile()
     @expose()
     public async verify(token: string): Promise<object | null> {
+        if (await this.db.exists(token)) {
+            return null;
+        }
+
         const data = jwtDecode(token) as any;
 
         if (!data || data.exp && new Date().getTime() > data.exp * 1000) {
