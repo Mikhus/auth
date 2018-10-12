@@ -28,8 +28,16 @@ import { md5 } from './encryption';
 
 export class Auth extends IMQService {
 
+    /**
+     * User service client
+     * @type {IMQService}
+     */
     private user: any;
 
+    /**
+     * Performs all required async preparations
+     * on service initialization
+     */
     public async start() {
         this.user = new (
             await IMQClient.create('User', clientOptions)
