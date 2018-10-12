@@ -49,7 +49,10 @@ export class Auth extends IMQService {
             await IMQClient.create('User', clientOptions)
         ).UserClient();
         await this.user.start();
-        this.db = createHandyClient();
+        this.db = createHandyClient({
+            host: AUTH_DB_HOST,
+            port: AUTH_DB_PORT
+        });
         return super.start();
     }
 
