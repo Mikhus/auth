@@ -53,6 +53,7 @@ export class Auth extends IMQService {
             host: AUTH_DB_HOST,
             port: AUTH_DB_PORT
         });
+
         return super.start();
     }
 
@@ -106,7 +107,7 @@ export class Auth extends IMQService {
     }
 
     /**>
-     * Verify if user token is valid, and if so - returns an associated user
+     * Verifies if user token is valid, and if so - returns an associated user
      * object
      *
      * @param {string} token
