@@ -83,16 +83,21 @@ export class Auth extends IMQService {
     /**
      * Logs user out
      *
-     * @param {string} token
-     * @return {boolean}
+     * @param {string} token - jwt auth user token
+     * @param {string} [verifyEmail] - email to verify from a given token (if provided - must match)
+     * @return {boolean} - operation result
      */
     @profile()
     @expose()
-    public async logout(token: string): Promise<boolean> {
+    public async logout(token: string, verifyEmail?: string): Promise<boolean> {
         const data = jwtDecode(token) as any;
 
         if (!data) {
             return true;
+        }
+
+        if (verifyEmail && data.email !== verifyEmail) {
+            return false;
         }
 
         const ttl: number = data.exp * 1000 - new Date().getTime();
