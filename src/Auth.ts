@@ -63,6 +63,7 @@ export class Auth extends IMQService {
      * @param {string} email - user email address
      * @param {string} password - user password hash
      * @return {string|null} - issued user auth token or null if auth failed
+     * @throws {Error} - "Password mismatch" or "Blocked"
      */
     @profile()
     @expose()
