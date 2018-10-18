@@ -70,8 +70,12 @@ export class Auth extends IMQService {
         const user = await this.user.fetch(email,
             ['_id', 'email', 'password', 'isAdmin', 'isActive']);
 
-        if (!(user && user.password === md5(password) && user.isActive)) {
-            return null;
+        if (!(user && user.password === md5(password))) {
+            throw new Error('Password mismatch');
+        }
+
+        else if (!user.isActive) {
+            throw new Error('Blocked');
         }
 
         delete user.password;
