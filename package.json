@@ -68,6 +68,7 @@
     "definitions": "index.d.ts"
   },
   "nyc": {
+    "check-coverage": false,
     "extension": [
       ".ts"
     ],
