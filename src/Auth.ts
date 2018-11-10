@@ -62,7 +62,7 @@ export class Auth extends IMQService {
      *
      * @param {string} email - user email address
      * @param {string} password - user password hash
-     * @return {string|null} - issued user auth token or null if auth failed
+     * @return {Promise<string | null>} - issued user auth token or null if auth failed
      * @throws {Error} - "Password mismatch" or "Blocked"
      */
     @profile()
@@ -89,7 +89,7 @@ export class Auth extends IMQService {
      *
      * @param {string} token - jwt auth user token
      * @param {string} [verifyEmail] - email to verify from a given token (if provided - must match)
-     * @return {boolean} - operation result
+     * @return {Promise<boolean>} - operation result
      */
     @profile()
     @expose()
@@ -115,12 +115,12 @@ export class Auth extends IMQService {
         return true;
     }
 
-    /**>
+    /**
      * Verifies if user token is valid, and if so - returns an associated user
      * object
      *
      * @param {string} token
-     * @return {object | null}
+     * @return {Promise<object | null>}
      */
     @profile()
     @expose()
