@@ -20,7 +20,7 @@
     "start": "NODE_ENV=production /usr/bin/env node ./index.js",
     "dev:ts": "NODE_ENV=development ts-node index.ts",
     "dev": "npm run clean:dts && npm run clean:map && npm run clean:js && ./node_modules/nodemon/bin/nodemon.js",
-    "docker:build": "docker build -f Dockerfile -t auth .",
+    "docker:build": "tsc && docker build -f Dockerfile -t auth .",
     "docker:run": "docker run --rm -it --name auth auth",
     "docker:stop": "docker stop auth",
     "docker:ssh": "docker exec -it auth sh"
